@@ -1,35 +1,58 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lnicolau <lnicolau@student.42malaga.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/03/25 13:10:05 by lnicolau          #+#    #+#             */
+/*   Updated: 2024/03/25 13:10:05 by lnicolau         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <unistd.h>
 #include <signal.h>
+#include "./libft/libft.h"
+#include "./libft/ft_printf.h"
 
-void process_signal(int sendsignal)
+void process_signal(int sendsignal, siginfo_t *info, void *ucontext)
 {
-    static unsigned char buffer; // almacena los bits recibidos
-    static int received_signal_count; // num de señales recibidas
+    (void)ucontext;
+    static unsigned char buff;
+    static int received_signal_count;
+    static int client_pid = 0;
 
-    buffer = 0;
-    received_signal_count = 0;
+    if (client_pid == 0) {
+        client_pid = info->si_pid;
+        ft_printf("Mensaje enviado por el cliente: PID %d\n", client_pid);
+    }
 
-    if(sedsignal == SIGUSR1)
-        buffer |= 1;
-    received_signal_count ++;
-
-    if(received_signal_count == 8)
+    buff |= (sendsignal == SIGUSR1);
+    received_signal_count++;
+    if (received_signal_count == 8)
     {
-        ft_printf("%c", buffer);
+        ft_printf("%c", buff);
+        if (buff == '\0')
+            ft_printf("\n");
         received_signal_count = 0;
-        buffer = 0;
+        buff = 0;
     }
     else
-    {
-        buffer << 1;
-    }
+        buff <<= 1;
 }
 
 int main(void)
 {
-    ft_printf("El PID de nuestro fantastico cliente es chanchanchan...: %i\n", getpid())
-    signal(SIGURSR1, process_signal);
-    signal(SIGURSR2, process_signal);
+    ft_printf("PID: %i\n", getpid());
+
+    struct sigaction sa;
+    sa.sa_flags = SA_SIGINFO;
+    sa.sa_sigaction = process_signal;
+
+    sigaction(SIGUSR1, &sa, NULL);
+    sigaction(SIGUSR2, &sa, NULL);
+
     while (1)
         pause();
-    return(0);
+    return (0);
 }

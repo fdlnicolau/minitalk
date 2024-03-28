@@ -6,7 +6,7 @@
 /*   By: lnicolau <lnicolau@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 18:25:25 by lnicolau          #+#    #+#             */
-/*   Updated: 2024/03/28 18:18:22 by lnicolau         ###   ########.fr       */
+/*   Updated: 2024/03/28 18:25:08 by lnicolau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ int	main(int argc, char **argv)
 		string_counter++;
 	}
 	send_signal(pid, '\0');
-	ft_printf("Está ha sido la cantidad de caracteres enviados: %i\n",
-		string_counter);
 	return (0);
 }
 
